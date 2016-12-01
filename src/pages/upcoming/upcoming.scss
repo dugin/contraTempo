@@ -5,6 +5,12 @@ page-upcoming {
       .list-md {
     margin: 0;
 }
+
+.list-ios{
+
+    margin-bottom: 0;
+}
+    
     
 .list-md>.item-block:first-child, .list-md>.item-wrapper:first-child .item-block {
     border-top: 0px solid #dedede;
@@ -63,6 +69,12 @@ page-upcoming {
       margin-right: 12px;
       margin-left: 0;
       width: 25%;
+      padding-left: 3px;
+       padding-right: 3px;
+    }
+
+    .button-inner{
+      font-size: 1.2rem;
     }
   }
 

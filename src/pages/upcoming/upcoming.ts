@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, ModalController } from 'ionic-angular';
+import {  ModalController } from 'ionic-angular';
 import { Add } from '../add/add';
 import { TaskModel } from '../../model/task';
 import { TagModel } from '../../model/tag';
@@ -21,16 +21,20 @@ import { Observable } from 'rxjs/Rx';
 export class Upcoming {
 
   tasks = new Array<TaskModel>();
-  dates = new Array<DateModel>();
+  readonly GET_UPCOMING = 0;
 
 
-  constructor(public modalCtrl: ModalController, public taskProvider: TaskProvider, public tagProvider: TagProvider, public navCtrl: NavController) {
+  constructor(public modalCtrl: ModalController, 
+  public taskProvider: TaskProvider,
+   public tagProvider: TagProvider) {
 
     tagProvider.createTable().then(() => {
 
       taskProvider.createTable().then(() => {
 
-        this.getAll();
+        //this.taskProvider.deleteAll();
+
+       this.getAll();
 
       }).catch(err => {
 
@@ -44,6 +48,26 @@ export class Upcoming {
     })
   }
 
+
+  textButtonSize(task: TaskModel): string{
+
+      
+    let tam = task.tag.name.length;
+    console.log(task.name + ' - '+tam);
+
+    if( tam < 8)
+    return '1.6rem'
+
+    else if (tam > 12)
+    return '0.7rem';
+
+    else
+    return 1.6 - 0.15*(tam -7) + 'rem';
+
+   
+
+  }
+
   countDown(index: number) {
 
     console.log("countDown index: " + index);
@@ -51,14 +75,20 @@ export class Upcoming {
     let timer = Observable.timer(null, 1000);
     timer.subscribe(() => {
 
-      let date = this.dates[index];
+      let date = this.tasks[index].date;
 
-      if (date.seconds != null)
+      if (date.seconds != null){
         date.seconds = date.getSeconds();
+
+            if(date.seconds < 5)
+              if(date.getDiffInMs() >= 0)
+              this.setCompleted(index);
+      }
 
       if (date.minutes != null)
         date.minutes = date.getMinutes();
 
+   
       if (date.hours != null)
         date.hours = date.getHours();
 
@@ -71,67 +101,31 @@ export class Upcoming {
 
   }
 
+  setCompleted(index: number){
+
+    this.taskProvider.setCompleted(this.tasks[index].id, true).then(()=>{
+
+     
+            this.tasks.splice(index,1);
+    })
+
+  }
 
 
-  private checkDate(date: DateModel, timestamp: string, index?: number) {
+
+  private checkDate(date: DateModel, timestamp: string) {
 
     console.log("checkDate");
 
-    if (index == null) {
-
-      if (date.days != 0)
-        this.dates.push(new DateModel(timestamp, false, 'Dias', date.days));
+    if (date.days != 0)
+      return new DateModel(timestamp, false, 'Dias', date.days);
 
 
-      else if (date.days == 1)
-        this.dates.push(new DateModel(timestamp, false, 'Dia', date.days));
+    else if (date.hours != 0)
+      return new DateModel(timestamp, false, 'Horas', null, date.hours, date.minutes);
 
-      else {
-
-        if (date.hours != 0)
-          this.dates.push(new DateModel(timestamp, false, 'Horas', null, date.hours, date.minutes));
-
-
-        else if (date.hours == 1)
-          this.dates.push(new DateModel(timestamp, false, 'Hora', null, date.hours, date.minutes));
-
-
-        else {
-          this.dates.push(new DateModel(timestamp, false, 'Minutos', null, null, date.minutes, date.seconds));
-
-        }
-
-      }
-    }
-    else {
-      if (date.days != 0)
-        this.dates.splice(index, 0, new DateModel(timestamp, false, 'Dias', date.days));
-
-
-      else if (date.days == 1)
-        this.dates.splice(index, 0, new DateModel(timestamp, false, 'Dia', date.days));
-
-      else {
-
-        if (date.hours != 0)
-          this.dates.splice(index, 0, new DateModel(timestamp, false, 'Horas', null, date.hours, date.minutes));
-
-
-        else if (date.hours == 1)
-          this.dates.splice(index, 0, new DateModel(timestamp, false, 'Hora', null, date.hours, date.minutes));
-
-
-        else {
-          this.dates.splice(index, 0, new DateModel(timestamp, false, 'Minutos', null, null, date.minutes, date.seconds));
-
-
-        }
-
-      }
-    }
-
-
-
+    else
+      return new DateModel(timestamp, false, 'Minutos', null, null, date.minutes, date.seconds);
 
   }
 
@@ -159,53 +153,39 @@ export class Upcoming {
 
   private insertSorted(task: TaskModel) {
 
-    task.date = new DateModel(task.timestamp, true)
+    let d = new DateModel(task.timestamp, true);
+
+    task.date = this.checkDate(d, task.timestamp);
 
     var i = 0;
 
-    if (this.tasks.length > 0) {
-      for (i; i < this.tasks.length; i++) {
 
+    for (i; i < this.tasks.length; i++) {
 
+      let t = this.tasks[i];
 
-        let t = this.tasks[i];
+      if (task.date.getDiffInMs() < t.date.getDiffInMs())
+        continue;
 
-        if (i == this.tasks.length - 1) {
+      else {
 
-          this.tasks.push(task);
-          break;
-        }
-
-        else if (task.date.getDiffInMs() > t.date.getDiffInMs())
-          continue;
-
-
-
-        else {
-
-          this.tasks.splice(i, 0, task);
-
-          break;
-        }
-
+        this.tasks.splice(i, 0, task);
+        this.countDown(i);
+         this.countDown(this.tasks.length-1);
+        return;
       }
-      if (i == this.tasks.length -2 )
-        this.checkDate(task.date, task.timestamp);
-      else
-        this.checkDate(task.date, task.timestamp, i);
 
-      this.countDown(i);
     }
-    else
-      this.tasks.push(task);
+    this.tasks.push(task);
+    this.countDown(i);
 
   }
 
 
   private getAll() {
-    console.log("getAll");
+    console.log("getAll");  
 
-    this.taskProvider.getAll().then((tasks) => {
+    this.taskProvider.getAll(this.GET_UPCOMING).then((tasks) => {
 
 
       for (let x = 0; x < tasks.rows.length; x++) {
@@ -219,6 +199,8 @@ export class Upcoming {
           let date = new DateModel(localDate, true);
 
           this.tasks.push(new TaskModel(
+            false,
+            tasks.rows.item(x).id,
             tasks.rows.item(x).subject,
             tasks.rows.item(x).name,
             localDate,
@@ -227,9 +209,8 @@ export class Upcoming {
               data.rows.item(0).color,
               data.rows.item(0).id
             ),
-            date));
+            this.checkDate(date, localDate)));
 
-          this.checkDate(date, localDate);
           this.countDown(x);
         })
       }

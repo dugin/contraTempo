@@ -54,7 +54,7 @@ export class DateModel {
     }
 
     getDiffInMs(){
-         return  this.getTimeDiff("ms");
+         return  Moment().diff(Moment(this.timestamp, 'HH:mm DD/MM/YY'), 'ms');
     }
 
 

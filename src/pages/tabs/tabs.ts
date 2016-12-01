@@ -19,10 +19,4 @@ export class TabsPage {
 
   }
 
-  addTask(){
-    console.log("AddTask");
-    
-
-    this.navCtrl.push(Add);
-  }
-}
+ }

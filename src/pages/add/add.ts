@@ -4,8 +4,9 @@ import { Tag } from '../tag/tag';
 import { Icon } from '../icon/icon';
 import { DatePicker } from 'ionic-native';
 import { DateUtil } from '../../util/date-util';
+import { ExceptionUtil } from '../../util/exception-util';
 import { TaskModel } from '../../model/task';
-import {TaskProvider} from '../../providers/task'
+import { TaskProvider } from '../../providers/task'
 /*
   Generated class for the Add page.
 
@@ -23,7 +24,7 @@ export class Add {
   readonly TAG_CLASS = 1;
   dateArray = new Map<string, Date>();
   isIOS: boolean;
-  task = new TaskModel();
+  task = new TaskModel(false);
 
 
 
@@ -51,7 +52,11 @@ export class Add {
   }
 
   done() {
-     this.insertIntoDB();
+
+    let exceptionChecker = ExceptionUtil.checkTask(this.task);
+
+    exceptionChecker === true ?
+      this.insertIntoDB() : this.showExceptionAlert(exceptionChecker.toString());
   }
 
   insertIntoDB() {
@@ -60,22 +65,23 @@ export class Add {
 
     this.task.timestamp = DateUtil.transformDate(DateUtil.DB_DATE_FORMAT, this.task.timestamp);
 
-    this.taskProvider.insert(this.task).then((d)=>{
+    this.taskProvider.insert(this.task).then((d) => {
 
-    
-            this.task.timestamp = timeTemp;
+      this.task.id = d.insertId;
 
-          this.viewCtrl.dismiss( this.task);
+      this.task.timestamp = timeTemp;
 
-    }).catch( err=>{
+      this.viewCtrl.dismiss(this.task);
 
-         console.log("taskProvider.insert err: "+err);
-      
+    }).catch(err => {
 
-        
+      console.log("taskProvider.insert err: " + err);
+
+
+
 
     })
-     
+
 
   }
 
@@ -115,7 +121,7 @@ export class Add {
       date: new Date(),
       mode: type,
       is24Hour: true,
-      minDate: this.isIOS? new Date() : new Date().valueOf(), 
+      minDate: this.isIOS ? new Date() : new Date().valueOf(),
       androidTheme: DatePicker.ANDROID_THEMES.THEME_HOLO_LIGHT,
       locale: "pt_br"
     }).then(
@@ -132,9 +138,9 @@ export class Add {
 
   }
 
-close(){
-   this.viewCtrl.dismiss();
-}
+  close() {
+    this.viewCtrl.dismiss();
+  }
 
   presentModal(className) {
 
@@ -149,6 +155,26 @@ close(){
 
 
     });
+  }
+
+showExceptionAlert(msg: string) {
+
+    
+    let prompt = this.alertCtrl.create({
+      title: 'Erro',
+      message: msg,
+      buttons: [
+        {
+          text: 'Ok'
+
+        }
+      ]
+    });
+
+    prompt.present();
+   
+
+
   }
 
 }

@@ -20,14 +20,8 @@ export class TagProvider extends Database {
 
 
   createTable() {
-
-
-    return Database.storage.executeSql('CREATE TABLE IF NOT EXISTS tag (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, color TEXT)', [])
-     
-
+    return Database.storage.executeSql('CREATE TABLE IF NOT EXISTS tag (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, color TEXT)', [])   
   }
-
-
 
   insert(tag: TagModel) {
     return Database.storage.executeSql('INSERT INTO tag (name,color) VALUES (?,?)', [tag.name, tag.color])
@@ -38,22 +32,16 @@ export class TagProvider extends Database {
   }
 
   get(id: number) {
-    return Database.storage.executeSql('SELECT * FROM tag WHERE id = ?'
-      , [id])
+    return Database.storage.executeSql('SELECT * FROM tag WHERE id = ?' , [id])
   }
 
   update(tag: TagModel): Promise<any> {
-
     return Database.storage.executeSql('UPDATE tag SET  name = ?, color = ?  WHERE id = ?', [tag.name, tag.color, tag.id])
-
   }
 
 
   delete(id: number) {
-
-    return Database.storage.executeSql('DELETE FROM tag WHERE id = ?'
-      , [id,])
-
+    return Database.storage.executeSql('DELETE FROM tag WHERE id = ?', [id,])
   }
 
 

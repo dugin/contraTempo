@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, ViewController, AlertController, NavParams } from 'ionic-angular';
 import { TagModel } from '../../model/tag';
+import { ExceptionUtil } from '../../util/exception-util';
 /*
   Generated class for the TagDetail page.
 
@@ -16,7 +17,7 @@ export class TagDetail {
   groupColors = [];
   styleColorInput = { icon: "ios-arrow-down" };
   styleGrid = { visibility: "hidden", class: null };
-  tag = { name: null, color: null, id: null  };
+  tag = new TagModel();
   index: number;
 
   constructor(public navParams: NavParams, public alertCtrl: AlertController, public navCtrl: NavController, public viewCtrl: ViewController) {
@@ -87,39 +88,55 @@ export class TagDetail {
   }
 
   doneEditing() {
+    let exceptionChecker = ExceptionUtil.checkTag(this.tag);
+    console.dir(this.tag);
+    console.log(exceptionChecker);
 
-    if (this.checkFields()) {
-      this.toUpperCase();
+
+    if (exceptionChecker === true) {
+
+      this.tag.name = this.tag.name.toUpperCase();
+
       this.viewCtrl.dismiss({
-        tag: new TagModel(
-          this.tag.name,
-          this.tag.color,
-          this.tag.id),
+        tag: this.tag,
         index: this.index
-      });
+      })
     }
-
     else
-      this.presentAlert();
+      this.showExceptionAlert(exceptionChecker.toString());
+
+
+
+
+
+
   }
 
-  toUpperCase() {
-    this.tag.name = this.tag.name.toUpperCase();
-  }
 
 
-  presentAlert() {
-    let alert = this.alertCtrl.create({
+  showExceptionAlert(msg: string) {
+       let prompt = this.alertCtrl.create({
       title: 'Erro',
-      subTitle: 'Um ou mais campos não foram preenchidos',
-      buttons: ['OK']
+      message: msg,
+      buttons: [
+        {
+          text: 'Ok'
+
+        }
+      ]
     });
-    console.log(alert.isOverlay);
-    alert.present();
-    setTimeout(() => {
-      alert.present();
-    }, 100
-    )
+    prompt.setCssClass('alert');
+ 
+    prompt.present();
+   
+   
+
+     
+   
+
+
+
+
   }
 
 

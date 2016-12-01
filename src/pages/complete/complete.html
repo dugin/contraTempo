@@ -7,23 +7,43 @@
 
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>ContraTempo</ion-title>
-        <ion-buttons end showWhen="ios">
-      <button ion-button (click)="addTask()">
-        <ion-icon  name="add-circle"></ion-icon>
-      </button>
-    </ion-buttons>
-    
-  </ion-navbar>
+	<ion-navbar>
+		<ion-title>ContraTempo</ion-title>
+		
+	</ion-navbar>
 
 </ion-header>
 
-<ion-content padding>
+<ion-content>
 
-   <ion-fab center bottom showWhen="android" (click)="addTask()">
-    <button ion-fab><ion-icon name="add"></ion-icon></button>
-    
-  </ion-fab>
+	<ion-list >
+		<ion-item *ngFor="let task of tasks, let i = index">
+			<ion-row no-padding>
+
+				<button item-left  ion-button  [color]="task.tag.color" outline disabled>  {{task.tag.name}} </button>
+
+
+				<ion-col text-left>
+
+			<h2> {{task.name}}</h2>
+					<p> {{task.subject}} </p>
+
+				</ion-col>
+
+				<ion-col text-wrap text-center>
+
+	      <h3> Concluido à </h3>
+					<h1> {{task.date.days}} </h1>
+					<h3> {{task.date.type}} atrás </h3>
+
+					<p> {{task.timestamp}} </p>
+				</ion-col>
+
+			</ion-row>
+
+		</ion-item>
+	</ion-list>
+
+
 
 </ion-content>

@@ -21,26 +21,26 @@
 
 <ion-content>
 
-	<ion-list *ngFor="let task of tasks, let i = index">
-		<ion-item>
+	<ion-list>
+		<ion-item *ngFor="let task of tasks, let i = index">
 			<ion-row no-padding>
 
-				<button item-left ion-button [color]="task.tag.color" outline disabled> {{task.tag.name}}</button>
+				<button item-left ion-button [color]="task.tag.color" outline disabled>  {{task.tag.name}} </button>
 
 
 				<ion-col text-left>
 
-					<h2> {{task.subject}}</h2>
-					<p> {{task.name}} </p>
+					<h2> {{task.name}}</h2>
+					<p> {{task.subject}} </p>
 
 				</ion-col>
 
 				<ion-col text-wrap text-center>
 
-					<h1 *ngIf="dates[i].days != null"> {{dates[i].days}} </h1>
-					<h1 *ngIf="dates[i].hours != null"> {{dates[i].hours}}:{{("0" + dates[i].minutes).slice(-2)}} </h1>
-					<h1 *ngIf="dates[i].seconds != null"> {{dates[i].minutes}}:{{("0" + dates[i].seconds).slice(-2)}} </h1>
-					<h3> {{dates[i].type}} </h3>
+					<h1 *ngIf="task.date.days != null"> {{task.date.days}} </h1>
+					<h1 *ngIf="task.date.hours != null"> {{task.date.hours}}:{{("0" + task.date.minutes).slice(-2)}} </h1>
+					<h1 *ngIf="task.date.seconds != null" style="color: red"> {{task.date.minutes}}:{{("0" + task.date.seconds).slice(-2)}} </h1>
+					<h3> {{task.date.type}} </h3>
 
 					<p> {{task.timestamp}} </p>
 				</ion-col>

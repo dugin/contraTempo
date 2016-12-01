@@ -33,18 +33,18 @@
 			<ion-label>
 				<h3>Tópico </h3>
 			</ion-label>
-			<ion-input [(ngModel)]="task.subject" type="text"></ion-input>
+			<ion-input placeholder="Ex: Cálculo II" [(ngModel)]="task.name" type="text"></ion-input>
 		</ion-item>
 
 		<ion-item>
 			<ion-label>
-				<h3>Nome </h3>
+				<h3>Assunto </h3>
 			</ion-label>
-			<ion-input [(ngModel)]="task.name" type="text"></ion-input>
+			<ion-input placeholder="Ex: G1 matéria cap 10 ao 12" [(ngModel)]="task.subject" type="text"></ion-input>
 		</ion-item>
 
 		<button detail-none class="itens" ion-item (click)="isIOS ? presentDatePicker('datetime')  : presentDatePicker('date')">
-     <h3 >Termina às</h3>
+     <h3 >Data e Hora</h3>
   <h2>{{task.timestamp}} </h2>
  </button>
 
@@ -52,7 +52,7 @@
 
 		<button detail-none ion-item (click)="add(1)" class="itens">
    
-     <h3> Assunto </h3>
+     <h3> Tag </h3>
         <button  *ngIf="task.tag != null" ion-button [color]="task.tag.color" outline  readonly>{{task.tag.name}}</button>
 
 

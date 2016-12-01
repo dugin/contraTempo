@@ -31,8 +31,8 @@ export abstract class Database {
   abstract insert(obj : any);
   abstract update(obj : any);
   abstract delete(id : number);
-  abstract get(id : number);
-  abstract getAll();
+  abstract get(id : number, isCompleted?: number);
+  abstract getAll(isCompleted?: number);
 
 
 }

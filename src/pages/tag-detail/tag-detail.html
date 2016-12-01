@@ -29,7 +29,9 @@
 
 
 		<ion-item>
-			<ion-label>Nome</ion-label>
+			<ion-label>
+				<h3>Nome </h3>
+			</ion-label>
 			<ion-input type="text" [(ngModel)]="tag.name"></ion-input>
 		</ion-item>
 
@@ -48,7 +50,7 @@
 			<ion-row center wrap *ngFor="let group of groupColors">
 				<ion-col class="coluna" width-25 center *ngFor="let color of group.colors">
 
-					<button style="background-color: transparent;" clear (click)="setColor(color)">
+					<button style="background-color: transparent; margin: 0; padding: 0" clear (click)="setColor(color)">
      <svg >
   <circle [style.fill]=color  cx="32" cy="32" r="30"  />
 </svg>

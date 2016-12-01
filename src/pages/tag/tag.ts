@@ -65,7 +65,7 @@ export class Tag {
     modal.present();
 
     modal.onDidDismiss(data => {
-     
+
       if (data != null)
         if (data.tag != null)
           data.index != null ? this.update(data.tag, data.index) : this.insertTagIntoDB(data.tag);
@@ -150,13 +150,17 @@ export class Tag {
             data.rows.item(x).name,
             data.rows.item(x).color,
             data.rows.item(x).id));
-      
+
     })
   }
 
   showAlert(name: string): Promise<boolean> {
 
     let promise: Promise<string> = new Promise((resolve, reject) => {
+      
+      let temp = this.alertCtrl.create();
+      temp.present();
+    
 
       let prompt = this.alertCtrl.create({
         title: 'Exclusão',
@@ -176,7 +180,9 @@ export class Tag {
           }
         ]
       });
+      
       prompt.present();
+        temp.dismiss();
     });
 
     return promise

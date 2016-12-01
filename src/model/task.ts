@@ -2,14 +2,18 @@ import { TagModel } from '../model/tag';
 import { DateModel } from '../model/date';
 
 export class TaskModel {
+
+    id: number;
     subject: string;
     name: string;
     timestamp: string;
     tag: TagModel;
-    date: DateModel
+    date: DateModel;
+    isCompleted: boolean;
 
-    constructor(subject?: string, name?: string, timestamp?: string, tag?: TagModel, date?: DateModel) {
-
+    constructor(isCompleted: boolean, id?: number, subject?: string, name?: string, timestamp?: string, tag?: TagModel, date?: DateModel) {
+        this.isCompleted =  isCompleted;
+        this.id = id;
         this.subject = subject;
         this.name = name;
         this.timestamp = timestamp;
