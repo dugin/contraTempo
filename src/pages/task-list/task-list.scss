@@ -1,14 +1,16 @@
-page-complete {
+page-task-list {
 
 
 
       .list-md {
     margin: 0;
 }
+
 .list-ios{
 
     margin-bottom: 0;
 }
+    
     
 .list-md>.item-block:first-child, .list-md>.item-wrapper:first-child .item-block {
     border-top: 0px solid #dedede;
@@ -72,7 +74,7 @@ page-complete {
     }
 
     .button-inner{
-      font-size: 50%;
+      font-size: 1.2rem;
     }
   }
 
@@ -91,5 +93,5 @@ page-complete {
      margin-bottom: 5px;
        
    }
-
+   
 }

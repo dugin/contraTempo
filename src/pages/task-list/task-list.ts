@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {  ModalController } from 'ionic-angular';
+import { ModalController } from 'ionic-angular';
 import { Add } from '../add/add';
 import { TaskModel } from '../../model/task';
 import { TagModel } from '../../model/tag';
@@ -15,18 +15,19 @@ import { Observable } from 'rxjs/Rx';
   Ionic pages and navigation.
 */
 @Component({
-  selector: 'page-upcoming',
-  templateUrl: 'upcoming.html'
+  selector: 'page-task-list',
+  templateUrl: 'task-list.html'
 })
-export class Upcoming {
+export class TaskList {
 
-  tasks = new Array<TaskModel>();
-  readonly GET_UPCOMING = 0;
+  tasksUpcoming = new Array<TaskModel>();
+  tasksComplete = new Array<TaskModel>();
+  tasksList = this.tasksUpcoming;
+  taskType: string = 'upcoming';
 
-
-  constructor(public modalCtrl: ModalController, 
-  public taskProvider: TaskProvider,
-   public tagProvider: TagProvider) {
+  constructor(public modalCtrl: ModalController,
+    public taskProvider: TaskProvider,
+    public tagProvider: TagProvider) {
 
     tagProvider.createTable().then(() => {
 
@@ -34,7 +35,7 @@ export class Upcoming {
 
         //this.taskProvider.deleteAll();
 
-       this.getAll();
+        this.getAll();
 
       }).catch(err => {
 
@@ -48,23 +49,13 @@ export class Upcoming {
     })
   }
 
+  onChange(event: string) {
+    console.log(event);
 
-  textButtonSize(task: TaskModel): string{
-
-      
-    let tam = task.tag.name.length;
-    console.log(task.name + ' - '+tam);
-
-    if( tam < 8)
-    return '1.6rem'
-
-    else if (tam > 12)
-    return '0.7rem';
-
+    if (event.localeCompare('upcoming') == 0)
+      this.tasksList = this.tasksUpcoming
     else
-    return 1.6 - 0.15*(tam -7) + 'rem';
-
-   
+      this.tasksList = this.tasksComplete
 
   }
 
@@ -75,20 +66,20 @@ export class Upcoming {
     let timer = Observable.timer(null, 1000);
     timer.subscribe(() => {
 
-      let date = this.tasks[index].date;
+      let date = this.tasksUpcoming[index].date;
 
-      if (date.seconds != null){
+      if (date.seconds != null) {
         date.seconds = date.getSeconds();
 
-            if(date.seconds < 5)
-              if(date.getDiffInMs() >= 0)
-              this.setCompleted(index);
+        if (date.seconds < 5)
+          if (date.getDiffInMs() >= 0)
+            this.setCompleted(index);
       }
 
       if (date.minutes != null)
         date.minutes = date.getMinutes();
 
-   
+
       if (date.hours != null)
         date.hours = date.getHours();
 
@@ -101,12 +92,15 @@ export class Upcoming {
 
   }
 
-  setCompleted(index: number){
+  setCompleted(index: number) {
 
-    this.taskProvider.setCompleted(this.tasks[index].id, true).then(()=>{
+    this.taskProvider.setCompleted(this.tasksUpcoming[index].id, true).then(() => {
 
-     
-            this.tasks.splice(index,1);
+      let task = this.tasksUpcoming[index];
+      task.date = new DateModel(task.timestamp, false, 'Dias', 0)
+      this.tasksComplete.unshift(task);
+      this.tasksUpcoming.splice(index, 1);
+
     })
 
   }
@@ -160,32 +154,32 @@ export class Upcoming {
     var i = 0;
 
 
-    for (i; i < this.tasks.length; i++) {
+    for (i; i < this.tasksUpcoming.length; i++) {
 
-      let t = this.tasks[i];
+      let t = this.tasksUpcoming[i];
 
       if (task.date.getDiffInMs() < t.date.getDiffInMs())
         continue;
 
       else {
 
-        this.tasks.splice(i, 0, task);
+        this.tasksUpcoming.splice(i, 0, task);
         this.countDown(i);
-         this.countDown(this.tasks.length-1);
+        this.countDown(this.tasksUpcoming.length - 1);
         return;
       }
 
     }
-    this.tasks.push(task);
+    this.tasksUpcoming.push(task);
     this.countDown(i);
 
   }
 
 
   private getAll() {
-    console.log("getAll");  
 
-    this.taskProvider.getAll(this.GET_UPCOMING).then((tasks) => {
+
+    this.taskProvider.getAll().then((tasks) => {
 
 
       for (let x = 0; x < tasks.rows.length; x++) {
@@ -198,8 +192,10 @@ export class Upcoming {
 
           let date = new DateModel(localDate, true);
 
-          this.tasks.push(new TaskModel(
-            false,
+          let iscompleted: boolean = tasks.rows.item(x).iscompleted;
+
+          let task = new TaskModel(
+            iscompleted,
             tasks.rows.item(x).id,
             tasks.rows.item(x).subject,
             tasks.rows.item(x).name,
@@ -209,11 +205,19 @@ export class Upcoming {
               data.rows.item(0).color,
               data.rows.item(0).id
             ),
-            this.checkDate(date, localDate)));
+            iscompleted ? new DateModel(localDate, false, 'Dias', date.days) : this.checkDate(date, localDate));
+
+
+
+          tasks.rows.item(x).iscompleted ?
+            this.tasksComplete.unshift(task) : this.tasksUpcoming.unshift(task);
+
 
           this.countDown(x);
         })
       }
+
+
 
     })
   }

@@ -31,8 +31,8 @@ export class TaskProvider extends Database {
     return Database.storage.executeSql('INSERT INTO task (subject, name, timestamp, idtag, iscompleted) VALUES (?,?,?,?,?)', [task.subject ,task.name, task.timestamp, task.tag.id, iscompleted])
   }
 
-  getAll(iscompleted: number): Promise<any> {
-    return Database.storage.executeSql('SELECT * FROM task WHERE iscompleted = ? ORDER BY timeStamp ASC', [iscompleted])
+  getAll(): Promise<any> {
+    return Database.storage.executeSql('SELECT * FROM task ORDER BY timeStamp ASC',[]);
   }
 
   get(id: number): Promise<any> {
